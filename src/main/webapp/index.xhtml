@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:v="http://xmlns.jcp.org/jsf/composite/views"
+      xmlns:jsf="http://xmlns.jcp.org/jsf">
+    <h:head>
+        <title></title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="./resources/css/master.min.css" />
+        <link rel="stylesheet" href="./resources/static/semantic-ui/semantic.min.css" />
+        <link rel="stylesheet" href="./resources/static/semantic-ui-calendar/calendar.min.css" />
+        <script>
+            $(function () {
+                init()
+            })
+
+            const init = function () {
+                $('#vencimento').calendar(calendarConf('date'))
+                $('#pagRecebimento').calendar(calendarConf('date'))
+                $('.js-maskdate').mask('00/00/0000')
+                $('.js-maskint').mask('00', {selectOnFocus: true})
+                $('.js-maskmoney').maskMoney(moneyConf)
+                $('.ui.accordion').accordion('refresh')
+                $('.ui.dropdown').dropdown()
+            }
+        </script>
+    </h:head>
+    <h:body>
+
+
+        <h:form prependId="false" id="formulario" styleClass="ui form container" style="padding: 6px 0">
+            <h2 class="ui dividing header">Inclusão de Despesas | Receitas</h2>
+            <p:growl />
+            <div class="two fields">
+                <div class="field">
+                    <label>Descrição</label>
+                    <p:inputText placeholder="Descrição" value="#{lancamentoBean.lancamento.descricao}"/>
+                </div>
+                <div class="field">
+                    <div class="two fields">
+                        <div class="field">
+                            <label>Vencimento</label>
+                            <div class="ui calendar action input left icon" id="vencimento">
+                                <i class="calendar icon"></i>
+                                <p:inputText id="dataVencimento" placeholder="dd/mm/aaaa" value="#{lancamentoBean.lancamento.dataVencimento}" styleClass="js-maskdate" >
+                                    <f:convertDateTime pattern="dd/MM/yyyy" />
+                                </p:inputText>
+                                <p:commandLink styleClass="ui button grey" process="@this, dataVencimento" onclick="today('dataVencimento')">
+                                    <span>Hoje</span>
+                                </p:commandLink>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label>Data do Pagamento | Recebimento</label>
+                            <div class="ui calendar action input left icon" id="pagRecebimento">
+                                <i class="calendar icon"></i>
+                                <p:inputText id="dataPagRecebimento" value="#{lancamentoBean.lancamento.dataPgtoRcto}" styleClass="js-maskdate" placeholder="dd/mm/aaaa" >
+                                    <f:convertDateTime pattern="dd/MM/yyyy" />
+                                </p:inputText>
+                                <p:commandLink styleClass="ui button grey" process="@this, dataPagRecebimento" onclick="today('dataPagRecebimento')" >
+                                    <span>Hoje</span>
+                                </p:commandLink>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="two fields">
+                <div class="field">
+                    <label>Valor Original</label>
+                    <div class="ui labeled input" >
+                        <div class="ui basic label">R$</div>
+                        <p:inputText id="valorOriginal" value="#{lancamentoBean.lancamento.valorOriginal}" styleClass="js-maskmoney input money" placeholder="0,00" />
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Valor Pago | Recebido</label>
+                    <div class="ui labeled input" >
+                        <div class="ui basic label">R$</div>
+                        <p:inputText id="valorPagoRecebido" value="#{lancamentoBean.lancamento.valorPagoRecebido}" styleClass="js-maskmoney input money" placeholder="0,00"  ></p:inputText>
+                    </div>
+                </div>
+            </div>
+
+            <div id="mais" class="ui styled fluid accordion field">
+                <div class="title">
+                    <i class="icon dropdown"></i> Mais opções
+                </div>
+                <div class="content field transition fade">
+                    <div class="three fields">
+                        <div class="field">
+                            <label class="">Juros</label>
+                            <div class="ui labeled input" >
+                                <div class="ui basic label">R$</div>
+                                <p:inputText id="valorJuros" value="#{lancamentoBean.lancamento.valorJuros}" styleClass="js-maskmoney input money" placeholder="0,00" />
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="">Descontos</label>
+                            <div class="ui labeled input" >
+                                <div class="ui basic label">R$</div>
+                                <p:inputText id="valorDesconto" value="#{lancamentoBean.lancamento.valorDesconto}" styleClass="js-maskmoney input money" placeholder="0,00" />
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="">Acréscimos</label>
+                            <div class="ui labeled input" >
+                                <div class="ui basic label">R$</div>
+                                <p:inputText id="valorAcrescimo" value="#{lancamentoBean.lancamento.valorAcrescimo}" styleClass="js-maskmoney input money" placeholder="0,00" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="two fields">
+                        <div class="field">
+                            <label class="">Categoria</label>
+                            <p:outputPanel id="divCategorias">
+                                <div class="ui fluid selection dropdown">
+                                    <p:inputText id="inputCategoria" type="hidden" value="#{lancamentoBean.lancamento.categoria}" converter="entityConverter" />
+                                    <i class="dropdown icon"></i>
+                                    <div class="default text">Categoria</div>
+                                    <div class="menu">
+                                        <ui:repeat var="categoria" value="#{lancamentoBean.categorias}">
+                                            <div class="item" data-value="#{categoria.id}" jsf:converter="entityConverter" >
+                                                <i class="icon tasks"></i> #{categoria.descricao}
+                                            </div>
+                                        </ui:repeat>
+                                    </div>
+                                </div>
+                            </p:outputPanel>
+                            <p:commandLink process="@this" onclick="modal('modalCadastroSimplesCategoria')">
+                                <i class="icon circle plus"></i>Adicionar categoria
+                            </p:commandLink>
+                        </div>
+                        <div class="field">
+                            <label class="">Conta</label>
+                            <p:outputPanel id="divContas">
+                                <div class="ui fluid selection dropdown">
+                                    <p:inputText id="inputConta" type="hidden" value="#{lancamentoBean.lancamento.conta}" converter="entityConverter" />
+                                    <i class="dropdown icon"></i>
+                                    <div class="default text">Conta</div>
+                                    <div class="menu">
+                                        <ui:repeat var="conta" value="#{lancamentoBean.contas}">
+                                            <div class="item" data-value="#{conta.id}" jsf:converter="entityConverter" >
+                                                <i class="icon tags"></i> #{conta.descricao}
+                                            </div>
+                                        </ui:repeat>
+                                    </div>
+                                </div>
+                            </p:outputPanel>
+                            <p:commandLink process="@this" onclick="modal('modalCadastroSimplesConta')">
+                                <i class="icon circle plus"></i>Adicionar conta
+                            </p:commandLink>
+                        </div>
+                    </div>
+                    <div class="two fields">
+                        <div class="field">
+                            <label class="">Pessoa</label>
+                            <p:outputPanel id="divPessoas">
+                                <div class="ui fluid selection dropdown">
+                                    <p:inputText id="inputTeste" type="hidden" value="#{lancamentoBean.lancamento.pessoa}" converter="entityConverter" />
+                                    <i class="dropdown icon"></i>
+                                    <div class="default text">Pessoa</div>
+                                    <div class="menu">
+                                        <ui:repeat var="pessoa" value="#{lancamentoBean.pessoas}">
+                                            <div class="item" data-value="#{pessoa.id}" jsf:converter="entityConverter">
+                                                <i class="icon user"></i> #{pessoa.nome}
+                                            </div>
+                                        </ui:repeat>
+                                    </div>
+                                </div>
+                            </p:outputPanel>
+                            <p:commandLink process="@this" onclick="modal('modalCadastroSimplesPessoa')">
+                                <i class="icon circle plus"></i>Adicionar pessoa
+                            </p:commandLink>
+                        </div>
+                        <div class="field">
+                            <label class="">Repetir</label>
+                            <div class="two fields">
+                                <div class="field">
+                                    <div class="ui right labeled input" >
+                                        <h:inputText value="#{lancamentoBean.repetirLancamento}" styleClass="js-maskint" />
+                                        <div class="ui basic label">Vezes</div>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <h:selectOneMenu value="#{lancamentoBean.repetirPeriodo}" styleClass="ui selection fluid dropdown">
+                                        <f:selectItem itemLabel="Periodo" itemValue="" noSelectionOption="true" />
+                                        <f:selectItems value="#{lancamentoBean.periodosRepetir()}"
+                                                       var="p" itemLabel="#{p.descricao}" itemValue="#{p.dias}"/>
+                                    </h:selectOneMenu>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="two fields">
+                        <div class="field">
+                            <div class="ui checkbox">
+                                <p:inputText id="checkCartaoCredito" value="#{lancamentoBean.usarCartao}" pt:type="checkbox" tabindex="0" />
+                                <label for="checkCartaoCredito" style="cursor: pointer">Cartão de crédito</label>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui fluid selection dropdown">
+                                <p:inputText type="hidden" value="#{lancamentoBean.lancamento.cartaoCredito}"  />
+                                <i class="dropdown icon"></i>
+                                <div class="default text">Cartão de crédito</div>
+                                <div class="menu">
+                                    <div class="item" data-value="nubank">
+                                        <i class="icon credit card"></i>
+                                        Nubank
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field disabled">
+                        <p:commandLink styleClass="ui button">
+                            <i class="icon upload"></i>Anexar arquivos
+                        </p:commandLink>
+                    </div>
+                </div>
+            </div>
+            <div class="field">
+                <p:commandLink styleClass="ui facebook button" process="@this" update="@form" oncomplete="init()">
+                    <i class="icon save"></i>
+                    Salvar</p:commandLink>
+                <p:commandLink styleClass="ui default button" process="@this" update="@form" resetValues="true"
+                               oncomplete="init()">
+                    <i class="icon erase"></i>
+                    Limpar</p:commandLink>
+            </div>
+            <!--#f9fafb-->
+        </h:form>
+
+        <p:ajaxStatus oncomplete="init()" />
+
+        <script src="./resources/static/semantic-ui/semantic.min.js" ></script>
+        <script src="./resources/static/semantic-ui-calendar/calendar.min.js" ></script>
+        <script src="./resources/static/jquery-maskmoney/jquery.maskMoney.min.js" ></script>
+        <script src="./resources/static/jquery.mask/jquery.mask.min.js" ></script>
+        <h:outputScript library="js" name="master.js" ></h:outputScript>
+
+        <v:cadastroSimplesConta id="vCadastroSimplesConta" update=":formulario:divContas" bean="#{lancamentoBean}" beanAction="salvarConta"/>
+        <v:cadastroSimplesPessoa id="vCadastroSimplesPessoa" update=":formulario:divPessoas" bean="#{lancamentoBean}" beanAction="salvarPessoa"/>
+        <v:cadastroSimplesCategoria id="vCadastroSimplesCategoria" update=":formulario:divCategorias" bean="#{lancamentoBean}" beanAction="salvarCategoria"/>
+    </h:body>
+</html>

@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:cc="http://xmlns.jcp.org/jsf/composite"
+      xmlns:p="http://primefaces.org/ui">
+
+    <cc:interface>
+        <cc:attribute name="update" />
+        <cc:attribute name="bean" />
+        <cc:attribute name="beanAction" />
+    </cc:interface>
+
+    <cc:implementation>
+        <div id="modalCadastroSimplesPessoa" class="ui mini modal">
+            <div class="header">Pessoa - Cadastro Simplificado</div>
+            <div class="content">
+                <h:form id="formCadastroSimplesPessoa" prependId="false" styleClass="ui form">
+                    <div class="required field #{!component.findComponent('nomePessoa').valid ? 'error' : ''}">
+                        <h:outputLabel value="Nome" for="nomePessoa" />
+                        <p:inputText id="nomePessoa" value="#{pessoaBean.pessoa.nome}" required="true" placeholder="Nome" />
+                    </div>
+                </h:form>
+            </div>
+            <div class="actions">
+                <h:form>
+                    <p:commandLink process="@this" styleClass="ui grey button" update="#{cc.attrs.id}:formCadastroSimplesPessoa" action="#{pessoaBean.novaPessoa()}"
+                                   oncomplete="modal('modalCadastroSimplesPessoa', 'hide')"
+                                   partialSubmit="true">
+                        <i class="icon close"></i> Cancelar
+                    </p:commandLink>
+                    <p:commandLink process="@this #{cc.attrs.id}:formCadastroSimplesPessoa" styleClass="ui facebook button" update="#{cc.attrs.update} #{cc.attrs.id}:formCadastroSimplesPessoa" 
+                                   action="#{cc.attrs.bean[cc.attrs.beanAction]}"
+                                   partialSubmit="true">
+                        <i class="icon save"></i> Salvar
+                    </p:commandLink>
+                </h:form>
+            </div>
+        </div>
+    </cc:implementation>
+</html>
+

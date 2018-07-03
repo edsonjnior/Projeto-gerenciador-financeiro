@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:cc="http://xmlns.jcp.org/jsf/composite"
+      xmlns:p="http://primefaces.org/ui">
+
+    <cc:interface>
+        <cc:attribute name="update" />
+        <cc:attribute name="bean" />
+        <cc:attribute name="beanAction" />
+    </cc:interface>
+
+    <cc:implementation>
+        <div id="modalCadastroSimplesConta" class="ui mini modal">
+            <div class="header">Conta - Cadastro Simplificado</div>
+            <div class="content">
+                <h:form id="formCadastroSimplesConta" prependId="false" styleClass="ui form">
+                    <div class="required field #{!component.findComponent('nomeConta').valid ? 'error' : ''}">
+                        <h:outputLabel value="Descrição" for="nomeConta" />
+                        <p:inputText id="nomeConta" value="#{contaBean.conta.descricao}" required="true" placeholder="Descrição" />
+                    </div>
+                    <div class="field #{!component.findComponent('saldoInicialConta').valid ? 'error' : ''}">
+                        <h:outputLabel value="Saldo inicial" for="saldoInicialConta" />
+                        <p:inputText id="saldoInicialConta" value="#{contaBean.conta.saldoInicial}" styleClass="js-maskmoney input money"
+                                     converter="bigDecimal"
+                                     placeholder="0,00" />
+                    </div>
+                </h:form>
+            </div>
+            <div class="actions">
+                <h:form>
+                    <p:commandLink process="@this" styleClass="ui grey button" update="#{cc.attrs.id}:formCadastroSimplesConta" action="#{contaBean.novaConta()}"
+                                   oncomplete="modal('modalCadastroSimplesConta', 'hide')"
+                                   partialSubmit="true">
+                        <i class="icon close"></i> Cancelar
+                    </p:commandLink>
+                    <p:commandLink process="@this #{cc.attrs.id}:formCadastroSimplesConta" styleClass="ui facebook button" update="#{cc.attrs.update} #{cc.attrs.id}:formCadastroSimplesConta" 
+                                   action="#{cc.attrs.bean[cc.attrs.beanAction]}"
+                                   partialSubmit="true">
+                        <i class="icon save"></i> Salvar
+                    </p:commandLink>
+                </h:form>
+            </div>
+        </div>
+    </cc:implementation>
+</html>
+
