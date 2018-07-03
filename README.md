@@ -1,4 +1,4 @@
-# Projeto-gerenciador-financeiro
+# Projeto Gerenciador Financeiro
 Sistema para controle financeiro pessoal
 
 Aplicação web utilizando as seguintes tecnologias:
